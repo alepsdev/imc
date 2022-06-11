@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 String _resultado = '';
 TextEditingController _controller_peso = TextEditingController();
 TextEditingController _controller_altura = TextEditingController();
+var cor_resultado = Colors.black;
 
 class HomePage extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class HomePageState extends State<HomePage> {
               padding: EdgeInsets.fromLTRB(40.0, 25.0, 40.0, 0.0),
               child: Text(
                 _resultado,
-                style: TextStyle(fontSize: 25.0, color: Colors.red),
+                style: TextStyle(fontSize: 25.0, color: cor_resultado, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20.0,),
@@ -55,14 +56,38 @@ class HomePageState extends State<HomePage> {
 
                       if (peso != null && altura != null) {
                         altura = altura / 100.0;
+                        String situacao = '';
                         double resultImc = (peso / (altura * altura));
 
+                        if (resultImc <= 18.5)  {
+                          situacao = 'Abaixo do Peso';
+                          cor_resultado = Colors.black;
+                        }else if (resultImc > 18.5 && resultImc < 25.0){
+                          situacao = 'Peso Normal';
+                          cor_resultado = Colors.green;
+                        }else if (resultImc > 24.9 && resultImc < 30) {
+                          situacao = 'Sobrepeso';
+                          cor_resultado = Colors.yellow;
+                        }else if (resultImc > 29.9 && resultImc < 35) {
+                          situacao = 'Obesidade !';
+                          cor_resultado = Colors.orange;
+                        }else if (resultImc > 34.9 && resultImc < 40) {
+                          situacao = 'Obesidade Severa !!';
+                          cor_resultado = Colors.red;
+                        }else if (resultImc > 39.9) {
+                          situacao = 'Obesidade Morbida !!!';
+                          cor_resultado = Colors.deepPurple;
+                        }
+
+                        String resultImcFormatado = resultImc.toStringAsFixed(2);
+
                         setState((){
-                          _resultado = 'IMC : $resultImc';
+                          _resultado = '$situacao ($resultImcFormatado)';
+                          limpa_campos();
                         });
                       }
 
-                      debugPrint('Peso: $peso | altura: $altura | Resultado: $_resultado');
+                      // debugPrint('Peso: $peso | altura: $altura | Resultado: $_resultado');
                     },
                     child: Text('Calcular')),
             ),
@@ -84,5 +109,10 @@ class HomePageState extends State<HomePage> {
                 labelStyle: TextStyle(fontSize: 25.0, color: Colors.black87)),
           ),
         );
+  }
+
+  void limpa_campos() {
+    _controller_peso.clear();
+    _controller_altura.clear();
   }
 }
